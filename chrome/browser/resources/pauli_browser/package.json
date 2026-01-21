@@ -1,0 +1,33 @@
+{
+  "name": "pauli-browser",
+  "version": "0.1.0",
+  "description": "PAULI Browser - Developer-centric AI-powered Chromium fork",
+  "private": true,
+  "scripts": {
+    "build": "tsc && rollup -c",
+    "watch": "tsc --watch",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\""
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@tanstack/react-query": "^5.0.0",
+    "zustand": "^4.4.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@types/chrome": "^0.0.254",
+    "typescript": "^5.2.0",
+    "rollup": "^4.0.0",
+    "@rollup/plugin-typescript": "^11.1.0",
+    "@rollup/plugin-node-resolve": "^15.2.0",
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "eslint": "^8.50.0",
+    "prettier": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
