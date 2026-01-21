@@ -1,0 +1,85 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/resources/tools/optimize_webui.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+# PAULI Browser Resources
+# Custom developer-focused browser UI
+
+# TypeScript library for PAULI Browser
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  
+  in_files = [
+    "index.tsx",
+    "dashboard/DashboardApp.tsx",
+    "dashboard/types.ts",
+    "dashboard/components/WorkspaceNavigation.tsx",
+    "dashboard/components/ProjectsPanel.tsx",
+    "dashboard/components/TasksPanel.tsx",
+    "dashboard/components/AgentStatusPanel.tsx",
+    "dashboard/components/SyncStatusIndicator.tsx",
+    "command_palette/CommandPaletteContainer.tsx",
+    "command_palette/registry.ts",
+    "api/github/client.ts",
+    "api/notion/client.ts",
+    "api/gdrive/client.ts",
+    "agent_bridge/client.ts",
+    "agent_bridge/manager.ts",
+    "voice/voice_service.ts",
+  ]
+  
+  deps = [
+    "//ui/webui/resources/js:build_ts",
+  ]
+  
+  extra_deps = []
+}
+
+# Copy HTML files
+copy("copy_html") {
+  sources = [ "index.html" ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+# Generate GRD file for resources
+generate_grd("build_grd") {
+  grd_prefix = "pauli_browser"
+  out_grd = "$target_gen_dir/resources.grd"
+  
+  input_files = [
+    "index.html",
+  ]
+  
+  input_files_base_dir = rebase_path(".", "//")
+  
+  deps = [
+    ":build_ts",
+    ":copy_html",
+  ]
+  
+  manifest_files = []
+}
+
+# GRIT resources
+grit("resources") {
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+  
+  outputs = [
+    "grit/pauli_browser_resources.h",
+    "grit/pauli_browser_resources_map.cc",
+    "grit/pauli_browser_resources_map.h",
+    "pauli_browser_resources.pak",
+  ]
+  
+  output_dir = "$root_gen_dir/chrome"
+}
