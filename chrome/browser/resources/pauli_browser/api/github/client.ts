@@ -144,7 +144,11 @@ export class GitHubClient {
     message: string,
     sha?: string
   ) {
-    const encodedContent = btoa(content);
+    // Use TextEncoder for proper Unicode handling
+    const bytes = new TextEncoder().encode(content);
+    const binString = Array.from(bytes, (byte) => String.fromCodePoint(byte)).join('');
+    const encodedContent = btoa(binString);
+    
     return this.request(`/repos/${owner}/${repo}/contents/${path}`, {
       method: 'PUT',
       body: JSON.stringify({

@@ -28,7 +28,10 @@ export class SpeechRecognitionService {
 
   constructor(config: VoiceConfig = {}) {
     // Check if browser supports Web Speech API
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = 
+      ('SpeechRecognition' in window) ? window.SpeechRecognition :
+      ('webkitSpeechRecognition' in window) ? (window as any).webkitSpeechRecognition :
+      null;
     
     if (!SpeechRecognition) {
       console.warn('Speech recognition not supported in this browser');
@@ -109,9 +112,9 @@ export class TextToSpeechService {
   constructor(config: TTSConfig = {}) {
     this.synth = window.speechSynthesis;
     this.config = {
-      rate: config.rate ?? 1.0,
-      pitch: config.pitch ?? 1.0,
-      volume: config.volume ?? 1.0,
+      rate: config.rate !== undefined ? config.rate : 1.0,
+      pitch: config.pitch !== undefined ? config.pitch : 1.0,
+      volume: config.volume !== undefined ? config.volume : 1.0,
       voice: config.voice,
     };
   }
@@ -129,9 +132,9 @@ export class TextToSpeechService {
     this.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = this.config.rate!;
-    utterance.pitch = this.config.pitch!;
-    utterance.volume = this.config.volume!;
+    utterance.rate = this.config.rate || 1.0;
+    utterance.pitch = this.config.pitch || 1.0;
+    utterance.volume = this.config.volume || 1.0;
 
     // Set voice if specified
     if (this.config.voice) {

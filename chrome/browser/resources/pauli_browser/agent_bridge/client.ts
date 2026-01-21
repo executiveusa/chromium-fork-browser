@@ -233,9 +233,12 @@ export class HTTPAgentClient extends AgentClient {
    */
   async waitForCompletion(
     taskId: string,
-    onProgress?: (task: AgentTask) => void
+    onProgress?: (task: AgentTask) => void,
+    maxRetries: number = 300 // 10 minutes with 2s polling
   ): Promise<AgentTask> {
-    while (true) {
+    let retries = 0;
+    
+    while (retries < maxRetries) {
       const task = await this.getTaskStatus(taskId);
       
       if (onProgress) {
@@ -246,8 +249,12 @@ export class HTTPAgentClient extends AgentClient {
         return task;
       }
 
+      retries++;
+      
       // Poll every 2 seconds
       await new Promise(resolve => setTimeout(resolve, 2000));
     }
+    
+    throw new Error(`Task ${taskId} timed out after ${maxRetries * 2} seconds`);
   }
 }
